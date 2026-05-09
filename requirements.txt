@@ -1,0 +1,19 @@
+# Quant Industrials ML Pipeline - Requirements
+# Tested end-to-end on Python 3.12 / 3.13
+# Install: pip install -r requirements.txt
+
+numpy==2.4.4
+pandas==3.0.2
+scipy==1.17.1
+scikit-learn==1.8.0
+lightgbm==4.6.0
+torch==2.11.0
+shap==0.51.0
+umap-learn==0.5.12
+matplotlib==3.10.8
+plotly==5.24.1
+
+# Jupyter
+notebook>=7.0
+ipykernel>=6.25
+jupyter>=1.0
