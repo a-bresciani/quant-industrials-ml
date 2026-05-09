@@ -4,7 +4,7 @@ Quantitative ML pipeline for 1-year forward return prediction on the S&P 500 Ind
 
 **Author**: Artemio Bresciani
 
-**Universe**: 79 tickers, FY 2009-2023
+**Universe**: 79 tickers, FY 2009-2023, Workspace data
 
 ---
 
@@ -23,19 +23,12 @@ Quantitative ML pipeline for 1-year forward return prediction on the S&P 500 Ind
 
 ---
 
-## Preview
-
-![Model performance](figures/03_model_performance.png)
-![Backtest](figures/06_backtest.png)
-
----
-
 ## Project structure
 
 ```
 quant_industrials/
 ├── src/                       # Pipeline modules (Python)
-│   ├── 03_clean_panel.py      # Cleaning of raw exports
+│   ├── 03_clean_panel.py      # Cleaning of dataset raw exports
 │   ├── 04_features.py         # Feature engineering (ratios, regimes, events)
 │   ├── 05_model.py            # Walk-forward CV with 4 base models + ensemble
 │   ├── 06_backtest.py         # Quintile portfolio backtest
@@ -44,34 +37,36 @@ quant_industrials/
 │   ├── 09_visualize.py        # 9 publication-grade figures
 │   └── 10_advanced_viz.py     # UMAP + 3D regime + signal decomposition
 ├── data/
-│   ├── raw/                   # Raw data exports (see data/raw/README.md)
+│   ├── raw/                   # dataset exports (3 CSV)
 │   └── processed/             # Cleaned panels, OOF predictions, metrics
-├── figures/                   # 12 PNG figures (150 dpi)
-├── notebooks/
-│   └── a-bresciani_Industrials_ML_FULL.ipynb
+├── figures/                   # 12 PNG figures (200 dpi)
 └── reports/
-    └── REPORT.md
+    ├── REPORT.md              # Full executive report
+    └── Bresciani_Industrials_ML.ipynb   # Presentation notebook
 ```
 
 ---
 
-## Quick start
+## Reproducibility
+
+All code uses `SEED = 42` for numpy / torch / sklearn / lightgbm. The full pipeline runs end-to-end in ~90 seconds on a 4-core CPU:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/quant-industrials-ml.git
-cd quant-industrials-ml
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+python3 src/03_clean_panel.py
+python3 src/04_features.py
+python3 src/05_model.py
+python3 src/06_backtest.py
+python3 src/07_interpret.py
+python3 src/08_robustness.py
+python3 src/09_visualize.py
+python3 src/10_advanced_viz.py
 ```
-
-Then place the raw data files in `data/raw/` as described in [`data/raw/README.md`](data/raw/README.md), open the notebook and run all cells. Pipeline runs end-to-end in ~90 seconds on a 4-core CPU.
 
 ---
 
 ## Methodology summary
 
-1. **Universe**: S&P 500 Industrials chain (`0#.SPLRCI`).
+1. **Universe**: S&P 500 Industrials chain (`0#.SPLRCI`) from Workspace.
 2. **Features** (45 numeric + 12 sub-industry one-hots):
    - Profitability ratios (gross/operating/net margin, EBITDA margin)
    - Returns on capital (ROA, ROE, ROIC proxy)
@@ -80,11 +75,11 @@ Then place the raw data files in `data/raw/` as described in [`data/raw/README.m
    - Efficiency (asset turnover, R&D intensity, SG&A ratio, PP&E intensity)
    - Size (log Revenue, log Assets)
    - Growth YoY (revenue, op income, net income, assets)
-   - Momentum (1Y, 6M, 3M past returns at fiscal year end)
-   - Macro at fiscal year end (UST yields, term spread, VIX, DXY, SPX/XLI 12M return and vol)
+   - Momentum (1Y, 6M, 3M past returns at FYE)
+   - Macro at FYE (UST yields, term spread, VIX, DXY, SPX/XLI 12M return & vol)
    - 8 hardcoded geopolitical event dummies with intensity
-3. **Models**: Ridge, ElasticNet, LightGBM, PyTorch MLP (2x[64->32], BatchNorm+GELU+Dropout 0.30), stacking ensemble.
-4. **Validation**: Walk-forward expanding window, 10 OOS years (2014-2023).
+3. **Models**: Ridge, ElasticNet, LightGBM, PyTorch MLP (2x[64→32], BatchNorm+GELU+Dropout 0.30), stacking ensemble.
+4. **Validation**: Walk-forward expanding window, 10 OOS years.
 5. **Backtest**: Annual quintile sort, equal-weighted, Long-Short Q5-Q1.
 
 ---
@@ -92,19 +87,18 @@ Then place the raw data files in `data/raw/` as described in [`data/raw/README.m
 ## Dependencies
 
 ```
-numpy, pandas, scipy, scikit-learn
+python>=3.10
+pandas, numpy, scikit-learn
 lightgbm
 torch>=2.0
 shap
 umap-learn
 matplotlib
-plotly
 ```
 
-Full pinned versions in `requirements.txt`. Install with:
-
+Install with:
 ```bash
-pip install -r requirements.txt
+pip install pandas numpy scikit-learn lightgbm torch shap umap-learn matplotlib
 ```
 
 ---
@@ -118,26 +112,3 @@ pip install -r requirements.txt
 5. Sub-sector ablation suggests Aerospace & Defense should be modeled separately.
 
 See `reports/REPORT.md` Section 8 for full discussion.
-
----
-
-## Reproducibility
-
-All code uses `SEED = 42` for numpy, torch, sklearn, and lightgbm. The pipeline can be run either via the notebook or sequentially through the scripts in `src/`:
-
-```bash
-python src/03_clean_panel.py
-python src/04_features.py
-python src/05_model.py
-python src/06_backtest.py
-python src/07_interpret.py
-python src/08_robustness.py
-python src/09_visualize.py
-python src/10_advanced_viz.py
-```
-
----
-
-## License
-
-MIT. See [LICENSE](LICENSE).
