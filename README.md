@@ -4,7 +4,7 @@ Quantitative ML pipeline for 1-year forward return prediction on the S&P 500 Ind
 
 **Author**: Artemio Bresciani
 
-**Universe**: 79 tickers, FY 2009-2023, Workspace data
+**Universe**: 79 tickers, FY 2009-2023
 
 ---
 
@@ -20,6 +20,13 @@ Quantitative ML pipeline for 1-year forward return prediction on the S&P 500 Ind
 | Long-Short Sharpe | 1.06 |
 | Long-Short hit rate | 80% (8/10 years) |
 | Quintile monotonicity (Q1 → Q5) | 12% → 21% |
+
+---
+
+## Preview
+
+![Model performance](figures/03_model_performance.png)
+![Backtest](figures/06_backtest.png)
 
 ---
 
